@@ -136,9 +136,13 @@ class BaseDetector(object):
     merge_time += end_time - post_process_time
     tot_time += end_time - start_time
 
+   
+
     if self.opt.debug >= 1:
-      self.show_results(debugger, image, results)
-    
-    return {'results': results, 'tot': tot_time, 'load': load_time,
-            'pre': pre_time, 'net': net_time, 'dec': dec_time,
-            'post': post_time, 'merge': merge_time}
+      ret_test = self.show_results(debugger, image, results)
+
+
+    return ret_test
+    #return {'results': results, 'tot': tot_time, 'load': load_time,
+            #'pre': pre_time, 'net': net_time, 'dec': dec_time,
+            #'post': post_time, 'merge': merge_time}
