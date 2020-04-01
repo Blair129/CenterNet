@@ -6,11 +6,15 @@ import numpy as np
 import cv2
 from .ddd_utils import compute_box_3d, project_to_image, draw_box_3d
 
+import time
+import base64
+
+
 class Debugger(object):
   def __init__(self, ipynb=False, theme='black', 
                num_classes=-1, dataset=None, down_ratio=4):
     self.ipynb = ipynb
-    if not self.ipynb:
+    if self.ipynb:
       import matplotlib.pyplot as plt
       self.plt = plt
     self.imgs = {}
@@ -187,6 +191,15 @@ class Debugger(object):
                     (bbox[0] + cat_size[0], bbox[1] - 2), c, -1)
       cv2.putText(self.imgs[img_id], txt, (bbox[0], bbox[1] - 2), 
                   font, 0.5, (0, 0, 0), thickness=1, lineType=cv2.LINE_AA)
+    global current_time
+    if current_time == 0:
+        current_time = time.time()
+    else:
+        last_time = current_time
+        current_time = time.time()
+        fps = 1. / (current_time - last_time)
+        text = "FPS: %d" % int(fps)
+        cv2.putText(img, text , (0,100), cv2.FONT_HERSHEY_TRIPLEX, 3.65, (255, 0, 0), 2)              
 
   def add_coco_hp(self, points, img_id='default'): 
     points = np.array(points, dtype=np.int32).reshape(self.num_joints, 2)
@@ -215,7 +228,8 @@ class Debugger(object):
   def show_all_imgs(self, pause=False, time=0):
     if not self.ipynb:
       for i, v in self.imgs.items():
-        cv2.imshow('{}'.format(i), v)
+        return v
+        #cv2.imshow('{}'.format(i), v)
       if cv2.waitKey(0 if pause else 1) == 27:
         import sys
         sys.exit(0)
